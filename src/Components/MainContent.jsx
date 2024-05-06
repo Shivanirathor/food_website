@@ -18,11 +18,11 @@ const MainContent = () => {
       );
 
       const data = await response.json();
-      console.log(
-        "Data from API:",
-        data?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle
-          ?.restaurants
-      );
+      // console.log(
+      //   "Data from API:",
+      //   data?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle
+      //     ?.restaurants
+      // );
 
       setListOfRestaurants(
         data?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle
@@ -70,7 +70,7 @@ const MainContent = () => {
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
-          <button onClick={handleSearch}>Search</button>
+          <button className="search_btn" onClick={handleSearch}>Search</button>
         </div>
         <button className="filter_btn" onClick={filterByTopRated}>
           Filter by Top Rated Restaurants
