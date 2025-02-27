@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from "react";
-import RestaurantCard from "./RestaurantCard";
+import RestaurantCard, { withPromotedLabel } from "./RestaurantCard";
 import Shimmer from "./Shimmer";
+import useOnlineState from "../utils/useOnlineState";
 
 const MainContent = () => {
   const [listOfRestaurants, setListOfRestaurants] = useState([]);
   const [filterRestaurant, setFilterRestaurant] = useState([]);
   const [searchText, setSearchText] = useState("");
 
+  const RestaurantCardPromoted = withPromotedLabel();
+  console.log("first", listOfRestaurants)
   useEffect(() => {
     fetchDataFromApi();
   }, []);
@@ -18,12 +21,7 @@ const MainContent = () => {
       );
 
       const data = await response.json();
-      // console.log(
-      //   "Data from API:",
-      //   data?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle
-      //     ?.restaurants
-      // );
-
+console.log(data)
       setListOfRestaurants(
         data?.data?.cards[4]?.card?.card?.gridElements?.infoWithStyle
           ?.restaurants
@@ -53,11 +51,20 @@ const MainContent = () => {
 
   const filterByTopRated = () => {
     const filteredData = listOfRestaurants.filter(
-      (restaurant) => restaurant.info.avgRating > 4
+      (restaurant) => restaurant.info.avgRating > 4.2
     );
-    setListOfRestaurants(filteredData);
+    console.log("first");
+    setFilterRestaurant(filteredData);
   };
 
+  const onlineStatus = useOnlineState();
+  if (onlineStatus === false) {
+    return (
+      <h1>
+        Looks like you're offline!! Please check your internet connection!!
+      </h1>
+    );
+  }
   return listOfRestaurants.length === 0 ? (
     <Shimmer />
   ) : (
@@ -70,16 +77,25 @@ const MainContent = () => {
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
           />
-          <button className="search_btn" onClick={handleSearch}>Search</button>
+          <button className="search_btn" onClick={handleSearch}>
+            Search
+          </button>
         </div>
         <button className="filter_btn" onClick={filterByTopRated}>
           Filter by Top Rated Restaurants
         </button>
       </div>
       <div className="main_cards">
-        {filterRestaurant.map((restaurant) => (
+        {/* {filterRestaurant.map((restaurant) => (
           <RestaurantCard key={restaurant.info.id} resData={restaurant} />
-        ))}
+        ))} */}
+        {filterRestaurant.map((restaurant) =>
+          restaurant.info.promoted ? (
+            <RestaurantCardPromoted resData={restaurant} />
+          ) : (
+            <RestaurantCard key={restaurant.info.id} resData={restaurant} />
+          )
+        )}
       </div>
     </div>
   );
